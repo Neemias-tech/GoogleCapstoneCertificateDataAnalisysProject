@@ -1,0 +1,180 @@
+---
+title: "Google Capstone"
+author: "Neemias Moreira"
+date: "2024-01-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Google Capstone Project- Neemias Moreira
+
+# I choose R to do the analysis because SQL or Excel can be limited to do some statistics in a large data set. Also choose Markdowm over Tableau for the easy integration with R and better to keep track of my analysis to further review and improvement.
+
+# Bellabeat Analysis
+
+Scenario:
+You are a junior data analyst working on the marketing analyst team at Bellabeat, a high-tech manufacturer of health-focused
+products for women. Bellabeat is a successful small company, but they have the potential to become a larger player in the
+global smart device market. Urška Sršen, cofounder and Chief Creative Officer of Bellabeat, believes that analyzing smart
+device fitness data could help unlock new growth opportunities for the company. You have been asked to focus on one of
+Bellabeat’s products and analyze smart device data to gain insight into how consumers are using their smart devices. The
+insights you discover will then help guide marketing strategy for the company. You will present your analysis to the Bellabeat
+executive team along with your high-level recommendations for Bellabeat’s marketing strategy.
+
+
+# First Analysis:
+
+Sršen knows that an analysis of Bellabeat’s available consumer data would reveal more opportunities for growth and there are some important info:
+
+Bellabeat has several products:  Bellabeat membership, Spring, Time, Leaf, and Bellabeat app.
+They have different functions to the end-user (Consumer). 
+
+My goal is to see through a SMART analysis where they can expand and have more costumer and where they can have more profit.
+
+Spring, Time and Leaf are gadgets so I won't focus on them, because I believe the real money it is on the Bellabeat membership and Bellabeat app. 
+
+First in the membership we can is aimed at augmenting customer enrollment, establishing a more robust customer base, enhancing revenue forecasting, and cultivating a more stable and healthier cash flow for our business. Also we can integrate with the Bellabeat and create some premium parts only to members. 
+
+# Questions to ask:
+
+
+Do we have actives users? 
+Where are the places we can improve and do a better service to our client?
+How we can create loyal users?
+
+
+```{r, echo=FALSE}
+#Loading Libraries
+library(dplyr)
+library(janitor)
+library(skimr)
+library(here)
+library(tidyverse)
+
+#reading the database for analysis
+dailyActivity_merged<-read.csv("dailyActivity_merged.csv")
+str(dailyActivity_merged)
+
+```
+Those are the information that I have of our Data Base.
+
+
+The first thing that I did was clean and check all the data to see if i have any Null values or any row in the wrong format.
+
+```{r, ECHO= FALSE}
+
+is_na <- any(is.na(dailyActivity_merged))
+```
+
+After check my data set, I started my analysis to answer my question and search for the best for the Bellabeat.
+
+```{r}
+print("Mean Very Active Distance:")
+mean(dailyActivity_merged$VeryActiveDistance)
+print("Mean Moderately Active Distance:")
+mean(dailyActivity_merged$ModeratelyActiveDistance)
+print("Mean Light Active Distance:")
+mean(dailyActivity_merged$LightActiveDistance)
+
+print("Mean Very Active Minutes:")
+mean(dailyActivity_merged$VeryActiveMinutes)
+print("Mean Moderately Active Minutes:")
+mean(dailyActivity_merged$FairlyActiveMinutes)
+print("Mean Light Active Minutes:")
+mean(dailyActivity_merged$LightlyActiveMinutes)
+```
+As showed our costumers are doing more light activities. So it's better fo us to focus on them.
+
+Let's see these data in a Pie Graph.
+```{r, echo=FALSE}
+new_data<- data.frame(
+  category = c("VeryActiveMinutes", "FairlyActiveMinutes", "LightlyActiveMinutes"),
+  mean_distance = c(1.50,0.57,3.34),
+  mean_minutes = c(21.16,13.56,192.81)
+)
+
+```
+Firts Pie Graph:
+```{r}
+ggplot(new_data, aes(x = "", y = mean_distance, fill = category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(title = "Mean Distance")
+```
+Almost 75% of our costumers are doing Light activities.
+
+
+Second Pie graph:
+```{r}
+ggplot(new_data, aes(x = "", y = mean_minutes, fill = category)) +
+  geom_bar(stat = "identity", width = 1, color = "white") +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  theme(legend.position = "bottom") +
+  labs(title = "Mean Minutes")
+```
+
+Now, let's see the distance and steps by our users:
+
+```{r}
+ggplot(data=dailyActivity_merged)+
+  geom_point(mapping = aes(x=TotalDistance,y=TotalSteps ))
+glimpse(dailyActivity_merged)
+```
+
+We have seen the majority of our users do less than 15,000 steps by day.
+
+# Let's check if our clients are logged in our app or just using the Smart Device.
+```{r}
+print("The Total Logged Activities Distance: ")
+sum(dailyActivity_merged$LoggedActivitiesDistance)
+print("The Total Activities Distance(Logged and unlogged): ")
+sum(dailyActivity_merged$TotalDistance)
+
+x = sum(dailyActivity_merged$LoggedActivitiesDistance)
+y = sum(dailyActivity_merged$TotalDistance)
+porcentage = x/y * 100
+print(porcentage)
+```
+
+The percentage of activities logged is less than 2%. That's a issue we need to facilitate and create rewards to logged actives. 
+
+
+## Conclusion: 
+
+We need to start a badger program giving rewards to our users to increase the use of our app and also generate more loyalty of them.
+
+Why we should focus on increase membership users and more use to the Bellabeat app?
+
+Expanding our membership program is probably one of the best solutions for the long-run of Bellabeat Business. The customer will receives  a product and a service continuously, while payment occurs at predetermined intervals, such as monthly or annually.
+
+The benefits of that includes: 
+Stable Cash Flow: The regular nature of recurring payments can provide a more consistent financial predictability for the business.
+
+Customer Loyalty: Subscription models can foster customer loyalty as individuals are more likely to continue using a service to which they are already committed.
+
+Up-sell Opportunity: Businesses can leverage recurring models to offer upgrades or add-ons, thereby increasing the average customer value over time.
+
+
+## Next Steps:
+
+First I believe we have to adress the issue with the uses of the app and logged activities. We need to have more data to see if the problem is between the smart device and the server, or if its slow or hard to connect. I suggest send a poll to our costumers asking about the connection.
+
+We need to increase our Data Base. This Data Base only have info or 30 costumers, so we can have some bias in further analysis. I would recommend at least 100 costumers to have a better sample for further analysis. 
+
+Now I believe we should increase the marketing towards new users in our app also giving them a free trial of our premium service in the app.
+
+Also to have more clients active in our app we need to create some notifications when our client don't do the recommend steps or give them congrats when they do more. 
+
+Also we can create a weekly report of sleep and tips to improve the time and quality of sleep. On that we can start a blog to give tips and recommendations and with some ads related of our product to some up-sell.
+
+Furthemore, according with Think Google (https://www.thinkwithgoogle.com/future-of-marketing/emerging-technology/smart-device-use-statistics/)
+61% of the population owns a smart device.
+So, we should create to mainly types of advertisement:
+First, to people that already have its own device focusing on our brand awareness, and showing our differential.
+Second, to people that don't have its own device, showing the benefits of having one and how it can make their life easier and more pleasure.
